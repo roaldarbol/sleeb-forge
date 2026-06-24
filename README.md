@@ -28,6 +28,7 @@ pixi add --channel https://prefix.dev/sleeb-forge --channel conda-forge r-fastcp
 | Package | Type | Description |
 | --- | --- | --- |
 | [r-tidychangepoint](recipes/tidychangepoint/recipe.yaml) | noarch | A tidy, unified interface for several changepoint-detection algorithms |
+| [r-tidyclust](recipes/tidyclust/recipe.yaml) | noarch | A common (tidymodels) API to clustering |
 | [r-fastcpd](recipes/fastcpd/recipe.yaml) | compiled | Fast change-point detection via sequential gradient descent |
 | [r-changepointga](recipes/changepointga/recipe.yaml) | compiled | Changepoint detection via modified genetic algorithms (dep of tidychangepoint) |
 | [r-wbs](recipes/wbs/recipe.yaml) | compiled | Wild Binary Segmentation for multiple change-point detection (dep of tidychangepoint) |

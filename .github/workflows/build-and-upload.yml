@@ -43,6 +43,7 @@ jobs:
           pixi run rattler-build build \
             --recipe-dir recipes \
             -m recipes/variants.yaml \
+            --skip-existing=all \
             -c https://prefix.dev/sleeb-forge \
             -c conda-forge \
             --output-dir output

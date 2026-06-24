@@ -1,0 +1,80 @@
+schema_version: 1
+
+context:
+  version: "0.3.1"
+
+package:
+  name: r-tidyclust
+  version: ${{ version }}
+
+source:
+  url:
+    - https://cran.r-project.org/src/contrib/tidyclust_${{ version }}.tar.gz
+    - https://cran.r-project.org/src/contrib/Archive/tidyclust/tidyclust_${{ version }}.tar.gz
+  sha256: 7aea2bb79c9f1a0885c51a1e378a2b0b5d5ec84fad4876583137be9d34d8d496
+
+build:
+  number: 0
+  noarch: generic
+  script: R CMD INSTALL --no-multiarch --with-keep.source .
+
+requirements:
+  host:
+    - r-base >=4.1
+    - r-cli
+    - r-lifecycle
+    - r-dials
+    - r-dplyr
+    - r-flexclust
+    - r-generics
+    - r-glue
+    - r-hardhat
+    - r-mclust
+    - r-modelenv
+    - r-parsnip
+    - r-philentropy
+    - r-prettyunits
+    - r-purrr
+    - r-rlang
+    - r-rsample
+    - r-tibble
+    - r-tidyr
+    - r-tune
+    - r-vctrs
+  run:
+    - r-base >=4.1
+    - r-cli
+    - r-lifecycle
+    - r-dials
+    - r-dplyr
+    - r-flexclust
+    - r-generics
+    - r-glue
+    - r-hardhat
+    - r-mclust
+    - r-modelenv
+    - r-parsnip
+    - r-philentropy
+    - r-prettyunits
+    - r-purrr
+    - r-rlang
+    - r-rsample
+    - r-tibble
+    - r-tidyr
+    - r-tune
+    - r-vctrs
+
+tests:
+  - script:
+      - Rscript -e "library(tidyclust)"
+
+about:
+  homepage: https://tidyclust.tidymodels.org/
+  summary: A Common API to Clustering
+  license: MIT
+  license_file: LICENSE
+  repository: https://CRAN.R-project.org/package=tidyclust
+
+extra:
+  recipe-maintainers:
+    - roaldarbol
