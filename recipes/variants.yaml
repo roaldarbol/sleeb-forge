@@ -4,6 +4,15 @@
 # whose activation packages are `gcc_win-64` / `gxx_win-64`. These keys are only
 # consumed by the `if: win` build branch of the compiled recipes, so they are
 # inert on linux/osx (which use the default `compiler('c')` -> gcc/clang).
+# Pin every R package to the same r-base. Without this, each recipe resolves
+# r-base independently (conda-forge ships both 4.5 and 4.6), so the compiled
+# packages export mutually-incompatible run constraints (e.g. wbs ->
+# r-base >=4.6,<4.7 vs changepointGA -> >=4.5,<4.6) and the noarch
+# tidychangepoint build cannot satisfy both host deps. 4.5 matches the r45
+# builds of the conda-forge dependencies (r-rcpparmadillo, r-clue, ...).
+r_base:
+  - "4.5"
+
 m2w64_c_compiler:
   - gcc
 m2w64_cxx_compiler:
