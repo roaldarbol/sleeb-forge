@@ -1,0 +1,87 @@
+schema_version: 1
+
+context:
+  version: "1.0.5"
+
+package:
+  name: r-tidychangepoint
+  version: ${{ version }}
+
+source:
+  url:
+    - https://cran.r-project.org/src/contrib/tidychangepoint_${{ version }}.tar.gz
+    - https://cran.r-project.org/src/contrib/Archive/tidychangepoint/tidychangepoint_${{ version }}.tar.gz
+  sha256: efc4d1259d1175323378c9c85a035a4e13dd763f03e2c51877a82a9c89b28744
+
+build:
+  number: 0
+  noarch: generic
+  script: R CMD INSTALL --no-multiarch --with-keep.source .
+
+requirements:
+  host:
+    - r-base >=4.2
+    - r-changepoint
+    - r-changepointga
+    - r-cli
+    - r-dplyr
+    - r-ga
+    - r-generics
+    - r-ggplot2
+    - r-lifecycle
+    - r-lubridate
+    - r-memoise
+    - r-prettyunits
+    - r-purrr
+    - r-rlang
+    - r-scales
+    - r-segmented
+    - r-stringr
+    - r-strucchange
+    - r-tibble
+    - r-tidyr
+    - r-tsibble
+    - r-vctrs
+    - r-wbs
+    - r-xts
+    - r-zoo
+  run:
+    - r-base >=4.2
+    - r-changepoint
+    - r-changepointga
+    - r-cli
+    - r-dplyr
+    - r-ga
+    - r-generics
+    - r-ggplot2
+    - r-lifecycle
+    - r-lubridate
+    - r-memoise
+    - r-prettyunits
+    - r-purrr
+    - r-rlang
+    - r-scales
+    - r-segmented
+    - r-stringr
+    - r-strucchange
+    - r-tibble
+    - r-tidyr
+    - r-tsibble
+    - r-vctrs
+    - r-wbs
+    - r-xts
+    - r-zoo
+
+tests:
+  - script:
+      - Rscript -e "library(tidychangepoint)"
+
+about:
+  homepage: https://beanumber.github.io/tidychangepoint/
+  summary: A Tidy Framework for Changepoint Detection Analysis
+  license: GPL-3.0-or-later
+  repository: https://CRAN.R-project.org/package=tidychangepoint
+
+extra:
+  recipe-maintainers:
+    - roaldarbol

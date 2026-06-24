@@ -4,9 +4,25 @@ on:
   workflow_dispatch:
   workflow_call:
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   build-and-upload:
-    runs-on: ubuntu-latest
+    name: ${{ matrix.target }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # The recipes contain compiled packages (fastcpd, changepointGA, wbs),
+          # so each platform is built on its own native runner. The lone noarch
+          # package (tidychangepoint) is uploaded once, from the linux runner.
+          - { os: ubuntu-latest,  target: linux-64,   upload_noarch: true  }
+          - { os: macos-13,       target: osx-64,     upload_noarch: false }
+          - { os: macos-14,       target: osx-arm64,  upload_noarch: false }
+          - { os: windows-latest, target: win-64,     upload_noarch: false }
     permissions:
       id-token: write  # required for prefix.dev trusted publishing
       contents: read
@@ -20,13 +36,25 @@ jobs:
         run: |
           pixi run rattler-build build \
             --recipe-dir recipes \
-            -c https://prefix.dev/animovement \
+            -m recipes/variants.yaml \
+            -c https://prefix.dev/sleeb-forge \
             -c conda-forge \
             --output-dir output
 
       - name: Upload to prefix.dev
         run: |
-          find output -type f \( -name "*.conda" -o -name "*.tar.bz2" \) | while read pkg; do
+          # Skip output/noarch on every runner but linux, so the single noarch
+          # package is published exactly once.
+          if [ "${{ matrix.upload_noarch }}" = "true" ]; then
+            search_dirs=(output)
+          else
+            search_dirs=()
+            for d in output/*/; do
+              [ "$(basename "$d")" = "noarch" ] && continue
+              search_dirs+=("$d")
+            done
+          fi
+          find "${search_dirs[@]}" -type f \( -name "*.conda" -o -name "*.tar.bz2" \) | while read pkg; do
             echo "Uploading $pkg ..."
-            pixi run rattler-build upload prefix --channel animovement "$pkg"
+            pixi run rattler-build upload prefix --channel sleeb-forge "$pkg"
           done

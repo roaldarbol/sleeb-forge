@@ -1,0 +1,10 @@
+# rattler-build's built-in default for the m2w64 (mingw) compiler slot is the
+# bogus `m2w64_c`, which expands to the non-existent package `m2w64_c_win-64`.
+# conda-forge builds compiled R packages on Windows with the mingw GNU toolchain,
+# whose activation packages are `gcc_win-64` / `gxx_win-64`. These keys are only
+# consumed by the `if: win` build branch of the compiled recipes, so they are
+# inert on linux/osx (which use the default `compiler('c')` -> gcc/clang).
+m2w64_c_compiler:
+  - gcc
+m2w64_cxx_compiler:
+  - gxx

@@ -1,0 +1,63 @@
+schema_version: 1
+
+context:
+  version: "1.4.1"
+
+package:
+  name: r-wbs
+  version: ${{ version }}
+
+source:
+  url:
+    - https://cran.r-project.org/src/contrib/wbs_${{ version }}.tar.gz
+    - https://cran.r-project.org/src/contrib/Archive/wbs/wbs_${{ version }}.tar.gz
+  sha256: d4a64f694bedbd8826a1c0bd3ec492d50763e4d7a9378b480d31efdc438133f7
+
+build:
+  number: 0
+  script: R CMD INSTALL --no-multiarch --with-keep.source .
+  dynamic_linking:
+    rpaths:
+      - lib/R/lib/
+      - lib/
+    missing_dso_allowlist:
+      - if: win
+        then:
+          - "*/R.dll"
+          - "*/Rblas.dll"
+          - "*/Rlapack.dll"
+
+requirements:
+  build:
+    - if: unix
+      then:
+        - ${{ compiler('c') }}
+    - if: win
+      then:
+        - ${{ compiler('m2w64_c') }}
+        - m2-filesystem
+        - m2-sed
+        - m2-coreutils
+        - m2-zip
+    - if: unix
+      then: make
+    - if: win
+      then: m2-make
+  host:
+    - r-base
+  run:
+    - r-base
+
+tests:
+  - script:
+      - Rscript -e "library(wbs)"
+
+about:
+  homepage: https://CRAN.R-project.org/package=wbs
+  summary: Wild Binary Segmentation for Multiple Change-Point Detection
+  license: GPL-2.0-only
+  repository: https://CRAN.R-project.org/package=wbs
+
+extra:
+  recipe-maintainers:
+    - roaldarbol

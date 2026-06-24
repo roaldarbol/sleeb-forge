@@ -1,0 +1,74 @@
+schema_version: 1
+
+context:
+  version: "1.0.0"
+
+package:
+  name: r-fastcpd
+  version: ${{ version }}
+
+source:
+  url:
+    - https://cran.r-project.org/src/contrib/fastcpd_${{ version }}.tar.gz
+    - https://cran.r-project.org/src/contrib/Archive/fastcpd/fastcpd_${{ version }}.tar.gz
+  sha256: 72d1454ce35700b32c8aff9aa1cc814fcbbb6d4fc67b1e131fdbd0e3472e082e
+
+build:
+  number: 0
+  script: R CMD INSTALL --no-multiarch --with-keep.source .
+  dynamic_linking:
+    rpaths:
+      - lib/R/lib/
+      - lib/
+    missing_dso_allowlist:
+      - if: win
+        then:
+          - "*/R.dll"
+          - "*/Rblas.dll"
+          - "*/Rlapack.dll"
+
+requirements:
+  build:
+    - if: unix
+      then:
+        - ${{ compiler('c') }}
+        - ${{ compiler('cxx') }}
+    - if: win
+      then:
+        - ${{ compiler('m2w64_c') }}
+        - ${{ compiler('m2w64_cxx') }}
+        - m2-filesystem
+        - m2-sed
+        - m2-coreutils
+        - m2-zip
+    - if: unix
+      then: make
+    - if: win
+      then: m2-make
+  host:
+    - r-base
+    - r-rcpp >=0.11.0
+    - r-rcpparmadillo
+    - r-progress
+    - r-testthat
+    - r-glmnet
+    - r-matrix
+  run:
+    - r-base
+    - r-rcpp >=0.11.0
+    - r-glmnet
+    - r-matrix
+
+tests:
+  - script:
+      - Rscript -e "library(fastcpd)"
+
+about:
+  homepage: https://fastcpd.xingchi.li
+  summary: Fast Change Point Detection via Sequential Gradient Descent
+  license: Apache-2.0
+  repository: https://CRAN.R-project.org/package=fastcpd
+
+extra:
+  recipe-maintainers:
+    - roaldarbol
