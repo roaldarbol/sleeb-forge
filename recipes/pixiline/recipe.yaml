@@ -1,0 +1,54 @@
+schema_version: 1
+
+context:
+  version: "0.1.1"
+  python_min: "3.11"
+
+package:
+  name: pixiline
+  version: ${{ version }}
+
+source:
+  url: https://github.com/roaldarbol/pixiline/archive/refs/tags/v${{ version }}.tar.gz
+  sha256: d1f4282bfaa57fcec2bcb7209d337686f6970ef21cb425d27f9f5ddaf9dce788
+
+build:
+  number: 0
+  noarch: python
+  python:
+    entry_points:
+      - pixiline = pixiline.app:main
+
+requirements:
+  host:
+    - python ${{ python_min }}.*
+    - hatchling
+    - pip
+  run:
+    - python >=${{ python_min }}
+    - pyside6 >=6.7
+    - loguru >=0.7
+    - pyte
+    - pixi
+    - menuinst >=2
+
+tests:
+  - python:
+      imports:
+        - pixiline
+      python_version: ${{ python_min }}.*
+
+about:
+  homepage: https://github.com/roaldarbol/pixiline
+  repository: https://github.com/roaldarbol/pixiline
+  summary: A generic Pixi-pipeline manager GUI.
+  description: |
+    pixiline is a thin PySide6 front-end for running and orchestrating
+    pixi-based pipelines. It builds and runs `pixi run ...` commands and
+    provides a queued job system with a DAG view of pipeline stages.
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - roaldarbol

@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "$id": "https://schemas.conda.io/menuinst-1.schema.json",
+  "menu_name": "pixiline",
+  "menu_items": [
+    {
+      "name": "pixiline",
+      "description": "A generic Pixi-pipeline manager GUI",
+      "icon": "{{ MENU_DIR }}/pixiline.{{ ICON_EXT }}",
+      "command": ["{{ PREFIX }}/bin/pixiline"],
+      "activate": true,
+      "terminal": false,
+      "platforms": {
+        "win": {
+          "command": ["{{ SCRIPTS_DIR }}/pixiline.exe"],
+          "desktop": true,
+          "app_user_model_id": "io.github.roaldarbol.pixiline"
+        },
+        "linux": {
+          "Categories": ["Development", "Utility", "Qt"],
+          "StartupWMClass": "pixiline"
+        },
+        "osx": {
+          "CFBundleName": "pixiline",
+          "CFBundleDisplayName": "pixiline",
+          "CFBundleIdentifier": "io.github.roaldarbol.pixiline"
+        }
+      }
+    }
+  ]
+}
