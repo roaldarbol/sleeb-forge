@@ -1,0 +1,8 @@
+# Shell build scripts must stay LF — a CRLF shebang breaks them on the
+# linux/osx build runners.
+*.sh text eol=lf
+
+# Icon binaries: never apply text/eol normalization.
+*.png binary
+*.ico binary
+*.icns binary
