@@ -1,7 +1,7 @@
 schema_version: 1
 
 context:
-  version: "0.1.1"
+  version: "0.2.0"
   python_min: "3.11"
 
 package:
@@ -10,7 +10,7 @@ package:
 
 source:
   url: https://github.com/roaldarbol/pixiline/archive/refs/tags/v${{ version }}.tar.gz
-  sha256: d1f4282bfaa57fcec2bcb7209d337686f6970ef21cb425d27f9f5ddaf9dce788
+  sha256: 87d2f7832892320ab9373609403887dc8b2cbd9ad5b40c97b8d4499c9aed481d
 
 build:
   number: 0
