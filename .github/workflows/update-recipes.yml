@@ -1,0 +1,48 @@
+name: Update recipes
+
+# Manual trigger: run from the Actions tab ("Run workflow"). When upstream
+# releases are newer than what the recipes pin, this opens a PR bumping the
+# version + sha256 (and resetting build.number) for each one.
+#
+# To also run automatically once a week, uncomment the schedule block below.
+on:
+  workflow_dispatch:
+  # schedule:
+  #   - cron: "0 6 * * 1"  # Mondays at 06:00 UTC
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update-recipes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Check for recipe updates
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash ./scripts/check-recipe-updates.sh
+
+      - name: Open pull request
+        if: ${{ hashFiles('.recipe-updates.txt') != '' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          summary="$(cat .recipe-updates.txt)"
+          rm -f .recipe-updates.txt
+
+          branch="auto/recipe-updates-${{ github.run_id }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$branch"
+          git add recipes
+          git commit -m "Update recipes to latest upstream versions" -m "$summary"
+          git push origin "$branch"
+
+          gh pr create \
+            --base "${{ github.ref_name }}" \
+            --head "$branch" \
+            --title "Update recipes to latest upstream versions" \
+            --body "$summary"
