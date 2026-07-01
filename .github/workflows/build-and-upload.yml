@@ -19,16 +19,11 @@ jobs:
           # The recipes contain compiled packages (fastcpd, changepointGA, wbs),
           # so each platform is built on its own native runner. The noarch
           # package (tidychangepoint) is uploaded once, from the runner whose
-          # row has upload_noarch: true.
-          #
-          # TEMPORARY: Windows-only for now. Uncomment the rows below to restore
-          # the full matrix, and flip win-64's upload_noarch back to false (the
-          # linux row uploads the noarch package).
-          - { os: windows-latest, target: win-64,     upload_noarch: true }
-          # - { os: ubuntu-latest,  target: linux-64,   upload_noarch: true  }
-          # - { os: macos-13,       target: osx-64,     upload_noarch: false }
-          # - { os: macos-14,       target: osx-arm64,  upload_noarch: false }
-          # - { os: windows-latest, target: win-64,     upload_noarch: false }
+          # row has upload_noarch: true (the linux row).
+          - { os: ubuntu-latest,  target: linux-64,   upload_noarch: true  }
+          - { os: macos-13,       target: osx-64,     upload_noarch: false }
+          - { os: macos-14,       target: osx-arm64,  upload_noarch: false }
+          - { os: windows-latest, target: win-64,     upload_noarch: false }
     permissions:
       id-token: write  # required for prefix.dev trusted publishing
       contents: read
