@@ -1,10 +1,10 @@
 {
   "$schema": "https://json-schema.org/draft-07/schema",
   "$id": "https://schemas.conda.io/menuinst-1.schema.json",
-  "menu_name": "pixiline",
+  "menu_name": "Pixiline",
   "menu_items": [
     {
-      "name": "pixiline",
+      "name": "Pixiline",
       "description": "A generic Pixi-pipeline manager GUI",
       "icon": "{{ MENU_DIR }}/pixiline.{{ ICON_EXT }}",
       "command": ["{{ PREFIX }}/bin/pixiline"],
@@ -22,7 +22,7 @@
         },
         "osx": {
           "CFBundleName": "pixiline",
-          "CFBundleDisplayName": "pixiline",
+          "CFBundleDisplayName": "Pixiline",
           "CFBundleIdentifier": "io.github.roaldarbol.pixiline"
         }
       }
