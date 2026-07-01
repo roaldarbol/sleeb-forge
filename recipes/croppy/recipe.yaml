@@ -13,7 +13,7 @@ source:
   sha256: 81bf84fa3c1abed1116a61ac3b810f0439762a375e43a6625be901b95c49dfd2
 
 build:
-  number: 0
+  number: 1
   noarch: python
   python:
     entry_points:
@@ -45,7 +45,7 @@ about:
   repository: https://github.com/roaldarbol/croppy
   summary: Visual GUI for cropping, combining, and compressing videos via ffmpeg.
   description: |
-    croppy is a desktop app for cropping, combining, and compressing videos,
+    Croppy is a desktop app for cropping, combining, and compressing videos,
     built on ffmpeg and Qt (PySide6). It provides a Crop / Combine / Compress
     workflow with a queued job system.
   license: MIT
