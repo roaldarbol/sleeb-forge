@@ -56,6 +56,10 @@ jobs:
               search_dirs+=("$d")
             done
           fi
+          if [ ${#search_dirs[@]} -eq 0 ]; then
+            echo "No packages to upload from this runner."
+            exit 0
+          fi
           find "${search_dirs[@]}" -type f \( -name "*.conda" -o -name "*.tar.bz2" \) | while read pkg; do
             echo "Uploading $pkg ..."
             pixi run rattler-build upload prefix --channel sleeb-forge "$pkg"
