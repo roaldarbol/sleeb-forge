@@ -43,7 +43,7 @@ about:
   repository: https://github.com/roaldarbol/pixiline
   summary: A generic Pixi-pipeline manager GUI.
   description: |
-    pixiline is a thin PySide6 front-end for running and orchestrating
+    Pixiline is a thin PySide6 front-end for running and orchestrating
     pixi-based pipelines. It builds and runs `pixi run ...` commands and
     provides a queued job system with a DAG view of pipeline stages.
   license: MIT
