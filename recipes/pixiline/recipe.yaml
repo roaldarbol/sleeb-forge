@@ -13,7 +13,7 @@ source:
   sha256: 87d2f7832892320ab9373609403887dc8b2cbd9ad5b40c97b8d4499c9aed481d
 
 build:
-  number: 0
+  number: 1
   noarch: python
   python:
     entry_points:
