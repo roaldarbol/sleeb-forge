@@ -1,0 +1,80 @@
+schema_version: 1
+
+context:
+  version: "2.56.0"
+
+package:
+  name: r-rhdf5
+  version: ${{ version }}
+
+source:
+  url:
+    - https://bioconductor.org/packages/3.23/bioc/src/contrib/rhdf5_${{ version }}.tar.gz
+    - https://bioconductor.org/packages/release/bioc/src/contrib/rhdf5_${{ version }}.tar.gz
+  sha256: 939ca4181f68afab41a3730a22a05d066fde810c6efe34e4f50ce01fe4339703
+
+build:
+  number: 0
+  script:
+    # rhdf5 links Rhdf5lib's HDF5, which still needs zlib (-lz). conda-forge's
+    # Windows R doesn't put $PREFIX/Library/lib on the linker search path, so
+    # point the mingw linker there via LIBRARY_PATH. Inert on unix.
+    - if: win
+      then:
+        - set "LIBRARY_PATH=%PREFIX%\Library\lib;%LIBRARY_PATH%"
+        - R CMD INSTALL --no-multiarch --with-keep.source .
+      else:
+        - R CMD INSTALL --no-multiarch --with-keep.source .
+  dynamic_linking:
+    rpaths:
+      - lib/R/lib/
+      - lib/
+    missing_dso_allowlist:
+      - if: win
+        then:
+          - "*/R.dll"
+          - "*/Rblas.dll"
+          - "*/Rlapack.dll"
+
+requirements:
+  build:
+    - if: unix
+      then:
+        - ${{ compiler('c') }}
+        - ${{ compiler('cxx') }}
+    - if: win
+      then:
+        - ${{ compiler('m2w64_c') }}
+        - ${{ compiler('m2w64_cxx') }}
+        - m2-filesystem
+        - m2-sed
+        - m2-coreutils
+        - m2-zip
+    - if: unix
+      then: make
+    - if: win
+      then: m2-make
+  host:
+    - r-base >=4.0.0
+    - r-rhdf5filters >=1.15.5
+    - r-rhdf5lib >=1.33.3
+    # rhdf5 links Rhdf5lib's HDF5, which is built with zlib (-lz).
+    - zlib
+  run:
+    - r-base >=4.0.0
+    - r-rhdf5filters >=1.15.5
+    - r-rhdf5lib >=1.33.3
+
+tests:
+  - script:
+      - Rscript -e "library(rhdf5)"
+
+about:
+  homepage: https://github.com/grimbough/rhdf5
+  summary: R Interface to HDF5
+  license: Artistic-2.0
+  repository: https://bioconductor.org/packages/rhdf5
+
+extra:
+  recipe-maintainers:
+    - roaldarbol

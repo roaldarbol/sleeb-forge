@@ -1,0 +1,93 @@
+schema_version: 1
+
+context:
+  version: "1.24.0"
+
+package:
+  name: r-rhdf5filters
+  version: ${{ version }}
+
+source:
+  url:
+    - https://bioconductor.org/packages/3.23/bioc/src/contrib/rhdf5filters_${{ version }}.tar.gz
+    - https://bioconductor.org/packages/release/bioc/src/contrib/rhdf5filters_${{ version }}.tar.gz
+  sha256: 7acc13da9f4cbef496f29dd332f6ec22cf61cfd5a55ed01fb4fc96ba9fa6d587
+
+build:
+  number: 0
+  script:
+    # Windows (mingw) needs two things upstream doesn't wire up, because
+    # conda-forge's Windows R ships an empty CPPFLAGS in Makeconf and R CMD config
+    # reads Makeconf, not the environment:
+    #   1. The bundled c-blosc filter includes <zlib.h> / links -lz. Point the
+    #      mingw gcc at conda's include+lib dirs via CPATH / LIBRARY_PATH, which
+    #      the compiler honors directly regardless of make flags.
+    #   2. The filter .so links the bundled libzstd.a, which references
+    #      pthread_once. mingw needs winpthread linked *after* the static archive,
+    #      so append -pthread to Makeconf's C/C++ flags: the gcc driver then emits
+    #      the pthread lib in the correct (final) link position.
+    #   3. The bundled streamvbyte (vbz filter) hardcodes an unprefixed `gcc`,
+    #      which the mingw toolchain doesn't provide. Copy the real driver to
+    #      gcc.exe in the same (on-PATH) bin dir so `gcc` resolves to it.
+    - if: win
+      then:
+        - set "CPATH=%PREFIX%\Library\include;%CPATH%"
+        - set "LIBRARY_PATH=%PREFIX%\Library\lib;%LIBRARY_PATH%"
+        - for /f "delims=" %%G in ('where x86_64-w64-mingw32-gcc') do copy /y "%%G" "%%~dpGgcc.exe"
+        - (echo.CFLAGS += -pthread)>>"%PREFIX%\lib\R\etc\x64\Makeconf"
+        - (echo.CXXFLAGS += -pthread)>>"%PREFIX%\lib\R\etc\x64\Makeconf"
+        - R CMD INSTALL --no-multiarch --with-keep.source .
+      else:
+        - R CMD INSTALL --no-multiarch --with-keep.source .
+  dynamic_linking:
+    rpaths:
+      - lib/R/lib/
+      - lib/
+    missing_dso_allowlist:
+      - if: win
+        then:
+          - "*/R.dll"
+          - "*/Rblas.dll"
+          - "*/Rlapack.dll"
+
+requirements:
+  build:
+    - if: unix
+      then:
+        - ${{ compiler('c') }}
+        - ${{ compiler('cxx') }}
+    - if: win
+      then:
+        - ${{ compiler('m2w64_c') }}
+        - ${{ compiler('m2w64_cxx') }}
+        - m2-filesystem
+        - m2-sed
+        - m2-coreutils
+        - m2-zip
+    - if: unix
+      then: make
+    - if: win
+      then: m2-make
+  host:
+    - r-base
+    - r-rhdf5lib
+    # The bundled c-blosc filter includes <zlib.h>.
+    - zlib
+  run:
+    - r-base
+    - r-rhdf5lib
+
+tests:
+  - script:
+      - Rscript -e "library(rhdf5filters)"
+
+about:
+  homepage: https://github.com/grimbough/rhdf5filters
+  summary: HDF5 Compression Filters
+  license: BSD-2-Clause
+  license_file: LICENSE
+  repository: https://bioconductor.org/packages/rhdf5filters
+
+extra:
+  recipe-maintainers:
+    - roaldarbol

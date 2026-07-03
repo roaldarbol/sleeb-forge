@@ -1,0 +1,83 @@
+schema_version: 1
+
+context:
+  version: "2.0.0"
+
+package:
+  name: r-rhdf5lib
+  version: ${{ version }}
+
+source:
+  url:
+    - https://bioconductor.org/packages/3.23/bioc/src/contrib/Rhdf5lib_${{ version }}.tar.gz
+    - https://bioconductor.org/packages/release/bioc/src/contrib/Rhdf5lib_${{ version }}.tar.gz
+  sha256: a6acd3536f4aca697d9c35dec43412d8ec4653bcdbad2b6d863977ad1ce11f82
+  patches:
+    - patches/disable-ros3-vfd.patch
+    - patches/windows-linklibs.patch
+
+build:
+  number: 0
+  script:
+    # Rhdf5lib builds vendored HDF5 + libaec with CMake via biocmake, which sets
+    # the mingw compilers/make but never passes -G, so CMake would default to the
+    # Visual Studio generator on Windows and fail. Force the Unix Makefiles
+    # generator (also the default on Linux/macOS, so this is inert there).
+    env:
+      CMAKE_GENERATOR: Unix Makefiles
+    content: R CMD INSTALL --no-multiarch --with-keep.source .
+  dynamic_linking:
+    rpaths:
+      - lib/R/lib/
+      - lib/
+    missing_dso_allowlist:
+      - if: win
+        then:
+          - "*/R.dll"
+          - "*/Rblas.dll"
+          - "*/Rlapack.dll"
+
+requirements:
+  build:
+    - if: unix
+      then:
+        - ${{ compiler('c') }}
+        - ${{ compiler('cxx') }}
+    - if: win
+      then:
+        - ${{ compiler('m2w64_c') }}
+        - ${{ compiler('m2w64_cxx') }}
+        - m2-filesystem
+        - m2-sed
+        - m2-coreutils
+        - m2-zip
+    - if: unix
+      then: make
+    - if: win
+      then: m2-make
+    # Rhdf5lib compiles the vendored HDF5 + libaec sources with CMake, located
+    # via biocmake::find(). Providing cmake on PATH keeps the build offline.
+    - cmake
+  host:
+    - r-base
+    - r-biocmake
+    # HDF5 is configured with zlib (HDF5_ENABLE_Z_LIB_SUPPORT); szip is provided
+    # by the vendored, statically-linked libaec. The ROS3 VFD (which would pull in
+    # libcurl + openssl) is disabled via patch, so no curl/openssl dependency.
+    - zlib
+  run:
+    - r-base
+
+tests:
+  - script:
+      - Rscript -e "library(Rhdf5lib); Rhdf5lib::pkgconfig('PKG_C_LIBS')"
+
+about:
+  homepage: https://github.com/grimbough/Rhdf5lib
+  summary: HDF5 Library as an R Package
+  license: Artistic-2.0
+  repository: https://bioconductor.org/packages/Rhdf5lib
+
+extra:
+  recipe-maintainers:
+    - roaldarbol

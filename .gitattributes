@@ -2,6 +2,10 @@
 # linux/osx build runners.
 *.sh text eol=lf
 
+# Recipe patches must stay LF so they apply against the (LF) upstream package
+# sources on every runner, including a Windows checkout with autocrlf enabled.
+*.patch text eol=lf
+
 # Icon binaries: never apply text/eol normalization.
 *.png binary
 *.ico binary
