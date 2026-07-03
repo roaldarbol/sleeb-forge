@@ -1,0 +1,46 @@
+schema_version: 1
+
+context:
+  version: "1.4.0"
+
+package:
+  name: r-biocmake
+  version: ${{ version }}
+
+source:
+  url:
+    - https://bioconductor.org/packages/3.23/bioc/src/contrib/biocmake_${{ version }}.tar.gz
+    - https://bioconductor.org/packages/release/bioc/src/contrib/biocmake_${{ version }}.tar.gz
+  sha256: 158c59fd65dca9b5e74e5c4f32a1fbe161e080d1278d99816a802980c653210d
+
+build:
+  number: 0
+  noarch: generic
+  script: R CMD INSTALL --no-multiarch --with-keep.source .
+
+requirements:
+  host:
+    - r-base
+    - r-dir.expiry
+  run:
+    - r-base
+    - r-dir.expiry
+    # biocmake::find() prefers a cmake already on PATH over downloading one,
+    # so a run-time cmake keeps the compiled packages that depend on it (e.g.
+    # r-rhdf5lib) building offline.
+    - cmake
+
+tests:
+  - script:
+      - Rscript -e "library(biocmake)"
+
+about:
+  homepage: https://bioconductor.org/packages/biocmake
+  summary: Discover and Launch CMake from R
+  license: MIT
+  license_file: LICENSE
+  repository: https://bioconductor.org/packages/biocmake
+
+extra:
+  recipe-maintainers:
+    - roaldarbol

@@ -1,0 +1,22 @@
+Trim the hardcoded Windows link-library list to what conda's mingw provides.
+
+Rhdf5lib::pkgconfig() returns a fixed `winlibs` list that assumes an Rtools /
+msys2 environment where libcurl and its whole static dependency tree (brotli,
+nghttp2, idn2, libunistring, gpgme, libgcrypt, gpg-error, libssh2, openssl, ...)
+are available as static archives. conda-forge's mingw toolchain does not ship
+those, and with the ROS3 VFD disabled HDF5 does not use curl/openssl at all.
+Downstream packages (rhdf5) link against exactly this list, so the absent
+libraries make the link fail with "cannot find -lbrotlicommon" etc.
+
+Reduce it to the libraries HDF5 actually needs here -- szip/libaec (sz, aec,
+bundled inside Rhdf5lib) and zlib (z) -- plus the Windows system import libraries
+(always present in mingw). The dropped entries are the curl/openssl chain that is
+no longer linked.
+
+--- a/R/zzz.R
++++ b/R/zzz.R
+@@ -37,3 +37,3 @@
+-    winlibs <- c("curl", "psl", "bcrypt", "zstd", "brotlidec", "brotlicommon", "idn2", "unistring", "nghttp2", "iconv", "ssh2", "gcrypt", "gpgme", "gpg-error", "secur32", "ssl", "crypto", "wldap32", "ws2_32", "crypt32", "sz", "aec", "z", "psapi")
++    winlibs <- c("bcrypt", "secur32", "wldap32", "ws2_32", "crypt32", "sz", "aec", "z", "psapi")
+     winlibs <- paste(sprintf("-l%s", winlibs), collapse = " ")
+   } else {
